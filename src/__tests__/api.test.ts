@@ -175,8 +175,7 @@ describe("Dashboard API", () => {
     mockPrisma.claim.findMany.mockResolvedValue([]);
 
     const { GET } = await import("@/app/api/dashboard/route");
-    const request = new Request("http://localhost:3000/api/dashboard");
-    const response = await GET(request);
+    const response = await GET();
     const data = await response.json();
 
     expect(data.stats.totalClaims).toBe(200);
