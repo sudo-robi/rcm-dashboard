@@ -9,6 +9,9 @@ const config = {
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
   },
+  transformIgnorePatterns: [
+    "node_modules/(?!(next-auth|@auth)/)",
+  ],
   testPathIgnorePatterns: ["<rootDir>/node_modules/", "<rootDir>/.next/"],
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",
