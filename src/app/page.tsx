@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import {
   DollarSign,
   FileText,
@@ -41,12 +41,21 @@ interface DashboardData {
   };
   denialByCategory: { category: string; count: number }[];
   statusDistribution: { status: string; count: number }[];
-  recentClaims: any[];
+  recentClaims: {
+    id: string;
+    claimNumber: string;
+    patient: { firstName: string; lastName: string };
+    provider: string;
+    procedureName: string;
+    amount: number;
+    status: string;
+    submittedDate: string;
+  }[];
 }
 
 const PIE_COLORS = ["#10b981", "#ef4444", "#f59e0b", "#3b82f6"];
 
-const STATUS_COLORS: Record<string, string> = {
+const STATUS_COLORS: Record<string, BadgeVariant> = {
   approved: "approved",
   denied: "denied",
   pending: "pending",
@@ -245,7 +254,7 @@ export default function DashboardPage() {
                       {formatCurrency(claim.amount)}
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <Badge variant={STATUS_COLORS[claim.status] as any}>
+                      <Badge variant={STATUS_COLORS[claim.status]}>
                         {claim.status}
                       </Badge>
                     </td>

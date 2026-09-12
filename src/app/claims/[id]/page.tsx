@@ -3,13 +3,11 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   ArrowLeft,
   User,
-  Building2,
-  Calendar,
   DollarSign,
   FileText,
   AlertTriangle,
@@ -56,7 +54,7 @@ interface DenialAnalysis {
   source: string;
 }
 
-const STATUS_COLORS: Record<string, string> = {
+const STATUS_COLORS: Record<string, BadgeVariant> = {
   approved: "approved",
   denied: "denied",
   pending: "pending",
@@ -140,7 +138,7 @@ export default function ClaimDetailPage() {
           <h1 className="text-3xl font-bold">{claim.claimNumber}</h1>
           <p className="text-muted-foreground mt-1">Claim Details</p>
         </div>
-        <Badge variant={STATUS_COLORS[claim.status] as any} className="ml-auto text-sm">
+        <Badge variant={STATUS_COLORS[claim.status]} className="ml-auto text-sm">
           {claim.status.toUpperCase()}
         </Badge>
       </div>

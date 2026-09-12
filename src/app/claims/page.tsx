@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeVariant } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, ChevronLeft, ChevronRight, Eye } from "lucide-react";
@@ -21,7 +21,7 @@ interface Claim {
   denialReason?: string;
 }
 
-const STATUS_COLORS: Record<string, string> = {
+const STATUS_COLORS: Record<string, BadgeVariant> = {
   approved: "approved",
   denied: "denied",
   pending: "pending",
@@ -44,7 +44,7 @@ export default function ClaimsPage() {
   const [status, setStatus] = useState("all");
   const [search, setSearch] = useState("");
 
-  const fetchClaims = () => {
+  const fetchClaims = useCallback(() => {
     setLoading(true);
     const params = new URLSearchParams({
       page: page.toString(),
@@ -61,11 +61,34 @@ export default function ClaimsPage() {
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  };
+  }, [page, status, search]);
 
   useEffect(() => {
-    fetchClaims();
-  }, [page, status]);
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial loading state is acceptable
+    setLoading(true);
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: "10",
+      ...(status !== "all" && { status }),
+      ...(search && { search }),
+    });
+
+    fetch(`/api/claims?${params}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
+          setClaims(data.claims);
+          setTotalPages(data.totalPages);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => { cancelled = true; };
+  }, [page, status, search]);
 
   const handleSearch = () => {
     setPage(1);
@@ -156,7 +179,7 @@ export default function ClaimsPage() {
                         {formatCurrency(claim.amount)}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <Badge variant={STATUS_COLORS[claim.status] as any}>
+                        <Badge variant={STATUS_COLORS[claim.status]}>
                           {claim.status}
                         </Badge>
                       </td>

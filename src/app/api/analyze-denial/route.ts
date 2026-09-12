@@ -168,7 +168,7 @@ Format as JSON with keys: appealActions (string[]), tips (string[]), likelihood 
       if (llmResponse) {
         analysis = JSON.parse(llmResponse);
       }
-    } catch (error) {
+    } catch {
       console.log("OpenAI unavailable, using rule-based analysis");
     }
   }

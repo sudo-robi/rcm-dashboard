@@ -3,6 +3,14 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 
+interface TokenWithRole {
+  role?: string;
+}
+
+interface SessionUser {
+  role?: string;
+}
+
 export const {
   handlers: { GET, POST },
   auth,
@@ -56,13 +64,13 @@ export const {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = (user as any).role;
+        (token as TokenWithRole).role = (user as { role?: string }).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        (session.user as any).role = token.role;
+        (session.user as SessionUser).role = (token as TokenWithRole).role;
       }
       return session;
     },
