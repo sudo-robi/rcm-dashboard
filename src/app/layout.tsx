@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   description: "Healthcare revenue cycle management dashboard for claims processing and denial analysis",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="en"
