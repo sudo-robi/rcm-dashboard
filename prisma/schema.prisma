@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String
+  role          String    @default("user")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Patient {
+  id            String    @id @default(cuid())
+  firstName     String
+  lastName      String
+  dateOfBirth   DateTime
+  gender        String
+  insuranceId   String    @unique
+  phone         String?
+  email         String?
+  address       String?
+  createdAt     DateTime  @default(now())
+  claims        Claim[]
+}
+
+model Claim {
+  id            String    @id @default(cuid())
+  claimNumber   String    @unique
+  patientId     String
+  patient       Patient   @relation(fields: [patientId], references: [id])
+  provider      String
+  procedureCode String
+  procedureName String
+  cptCode       String
+  icdCode       String
+  amount        Float
+  status        String    @default("pending") // pending, approved, denied, appealed
+  denialReason  String?
+  denialCategory String?
+  appealAction  String?
+  submittedDate DateTime  @default(now())
+  resolvedDate  DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
