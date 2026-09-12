@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
 
 // Denial analysis logic - works without OpenAI key by using rule-based suggestions
 const DENIAL_ANALYSIS_MAP: Record<string, { appealActions: string[]; tips: string[]; likelihood: string }> = {
@@ -175,13 +174,18 @@ Format as JSON with keys: appealActions (string[]), tips (string[]), likelihood 
 
   // Update claim with appeal action
   if (claimId) {
-    await prisma.claim.update({
-      where: { id: claimId },
-      data: {
-        status: "appealed",
-        appealAction: analysis.appealActions[0],
-      },
-    });
+    try {
+      const { prisma } = await import("@/lib/prisma");
+      await prisma.claim.update({
+        where: { id: claimId },
+        data: {
+          status: "appealed",
+          appealAction: analysis.appealActions[0],
+        },
+      });
+    } catch {
+      // Database unavailable, skip update
+    }
   }
 
   return NextResponse.json({
